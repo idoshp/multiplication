@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לוח הכפל - תרגול כיתה ג'</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .exercise-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .exercise {
+            font-size: 3em;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .input-group {
+            margin: 30px 0;
+        }
+
+        input[type="number"] {
+            font-size: 2em;
+            padding: 15px 25px;
+            border: 4px solid #667eea;
+            border-radius: 15px;
+            text-align: center;
+            width: 250px;
+            min-width: 250px;
+            outline: none;
+            transition: all 0.3s;
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"]:focus {
+            border-color: #f5576c;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            transform: scale(1.05);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-size: 1.5em;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .check-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .check-btn:active {
+            transform: translateY(0);
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .feedback.correct {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #2d5016;
+            animation: bounce 0.5s;
+        }
+
+        .feedback.wrong {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b4513;
+            animation: shake 0.5s;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #8b4513;
+            font-weight: normal;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(20);
+                opacity: 0;
+            }
+        }
+
+        .emoji {
+            font-size: 2em;
+            margin: 0 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            border-radius: 10px;
+        }
+
+        .results-screen {
+            padding: 20px;
+        }
+
+        .results-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 1.3em;
+            color: #2d5016;
+        }
+
+        .stat-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+        }
+
+        .wrong-exercises {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #8b4513;
+        }
+
+        .wrong-exercises-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .wrong-exercise-item {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        .selection-screen {
+            padding: 20px;
+        }
+
+        .selection-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 40px;
+        }
+
+        .range-button {
+            font-size: 1.8em;
+            padding: 25px 50px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .range-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .range-button:active {
+            transform: translateY(-2px);
+        }
+
+        .range-button.easy {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #2d5016;
+        }
+
+        .range-button.medium {
+            background: linear-gradient(135deg, #ffe66d 0%, #ffa726 100%);
+            color: #8b4513;
+        }
+
+        .range-button.hard {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .school-info {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>לוח הכפל - חידון</h1>
+        
+        <div id="selectionScreen">
+            <div class="selection-screen">
+                <div class="school-info">בית ספר תל״י רעננה כיתה ג</div>
+                <h2 class="selection-title">בחר טווח כפולות:</h2>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                    <button class="range-button easy" data-range="1-5">
+                        כפולות 1-5
+                    </button>
+                    <button class="range-button medium" data-range="5-9">
+                        כפולות 5-9
+                    </button>
+                    <button class="range-button hard" data-range="1-100">
+                        כפולות 1-100
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="quizScreen" class="hidden">
+            <div class="progress-info">
+                <span id="questionCounter">שאלה 1 מתוך 20</span>
+                <span id="timer">00:00</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 5%"></div>
+            </div>
+            
+            <div class="exercise-box">
+                <div class="exercise" id="exercise">5 × 3 = ?</div>
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="answer" placeholder="הקלד תשובה" autocomplete="off">
+            </div>
+
+            <div class="button-group">
+                <button class="check-btn" id="checkBtn">✓ בדוק</button>
+                <button class="next-btn hidden" id="nextBtn">➡️ שאלה הבאה</button>
+            </div>
+
+            <div class="feedback hidden" id="feedback"></div>
+        </div>
+
+        <div id="resultsScreen" class="hidden">
+            <div class="results-screen">
+                <h2 class="results-title">🎉 סיימת את החידון! 🎉</h2>
+                
+                <div class="stat-box">
+                    <div class="stat-label">תשובות נכונות:</div>
+                    <div class="stat-value" id="correctCount">0 / 20</div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-label">זמן:</div>
+                    <div class="stat-value" id="timeTaken">00:00</div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-label">אחוז הצלחה:</div>
+                    <div class="stat-value" id="successRate">0%</div>
+                </div>
+
+                <div id="wrongExercisesBox" class="wrong-exercises hidden">
+                    <div class="wrong-exercises-title">📝 כפולות לתרגול נוסף:</div>
+                    <div id="wrongExercisesList"></div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+                    <button class="next-btn" id="newQuizBtn" style="font-size: 1.5em; padding: 20px 50px;">
+                        🎯 חידון חדש
+                    </button>
+                    <button class="check-btn" id="backToSelectionBtn" style="font-size: 1.5em; padding: 20px 50px;">
+                        🏠 חזרה למסך הראשי
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fireworks" id="fireworks"></div>
+
+    <script>
+        // מצב החידון
+        let quizState = {
+            currentQuestion: 0,
+            totalQuestions: 20,
+            correctAnswers: 0,
+            wrongExercises: new Set(), // שמירת כפולות שגויות
+            startTime: null,
+            exercises: [], // רשימת כל התרגילים בחידון
+            askedExercises: new Set(), // תרגילים שכבר נשאלו בחידון הנוכחי
+            currentExercise: { num1: 0, num2: 0, answer: 0 },
+            isAnswered: false,
+            timerInterval: null,
+            exercisePool: [], // מאגר תרגילים לחידון
+            range: { min: 1, max: 5 } // טווח כפולות ברירת מחדל
+        };
+
+        // כפולות שהתלמיד טעה בהן (לשימוש בחידון הבא)
+        let weakMultiplications = new Set();
+
+        // יצירת מאגר תרגילים לחידון
+        function createExercisePool() {
+            const pool = [];
+            const usedKeys = new Set();
+            const { min, max } = quizState.range;
+            
+            // יצירת כל התרגילים האפשריים לפי הטווח שנבחר
+            for (let num1 = min; num1 <= max; num1++) {
+                for (let num2 = min; num2 <= max; num2++) {
+                    const key = `${num1}×${num2}`;
+                    if (!usedKeys.has(key)) {
+                        pool.push({ num1, num2, key });
+                        usedKeys.add(key);
+                    }
+                }
+            }
+            
+            // אם יש כפולות שהתלמיד טעה בהן, נוסיף אותן יותר פעמים למאגר
+            if (weakMultiplications.size > 0) {
+                weakMultiplications.forEach(weakKey => {
+                    const [n1, n2] = weakKey.split('×').map(n => parseInt(n));
+                    // נוסיף כל כפולה שגויה עוד 3 פעמים למאגר
+                    for (let i = 0; i < 3; i++) {
+                        pool.push({ num1: n1, num2: n2, key: weakKey });
+                    }
+                });
+            }
+            
+            // ערבוב המאגר
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            
+            return pool;
+        }
+
+        // יצירת תרגיל - עם העדפה לכפולות שגויות, אבל ללא חזרה
+        function generateExercise() {
+            let num1, num2, exerciseKey;
+            let attempts = 0;
+            const maxAttempts = 100;
+            
+            // אם המאגר נגמר או כמעט נגמר, ניצור מאגר חדש
+            if (quizState.exercisePool.length === 0 || 
+                quizState.exercisePool.length < (quizState.totalQuestions - quizState.currentQuestion)) {
+                quizState.exercisePool = createExercisePool();
+            }
+            
+            // נבחר תרגיל מהמאגר שלא נשאל כבר
+            do {
+                if (quizState.exercisePool.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * quizState.exercisePool.length);
+                    const exercise = quizState.exercisePool[randomIndex];
+                    num1 = exercise.num1;
+                    num2 = exercise.num2;
+                    exerciseKey = exercise.key;
+                    quizState.exercisePool.splice(randomIndex, 1); // נסיר מהמאגר
+                } else {
+                    // אם המאגר נגמר, ניצור תרגיל רנדומלי
+                    num1 = Math.floor(Math.random() * 5) + 1;
+                    num2 = Math.floor(Math.random() * 5) + 1;
+                    exerciseKey = `${num1}×${num2}`;
+                }
+                attempts++;
+            } while (quizState.askedExercises.has(exerciseKey) && attempts < maxAttempts);
+            
+            // אם עדיין לא מצאנו, נבחר תרגיל רנדומלי שלא נשאל
+            if (quizState.askedExercises.has(exerciseKey)) {
+                // ננסה למצוא תרגיל שלא נשאל
+                let found = false;
+                const { min, max } = quizState.range;
+                for (let n1 = min; n1 <= max && !found; n1++) {
+                    for (let n2 = min; n2 <= max && !found; n2++) {
+                        const key = `${n1}×${n2}`;
+                        if (!quizState.askedExercises.has(key)) {
+                            num1 = n1;
+                            num2 = n2;
+                            exerciseKey = key;
+                            found = true;
+                        }
+                    }
+                }
+                // אם כל התרגילים נשאלו, נבחר רנדומלי
+                if (!found) {
+                    num1 = Math.floor(Math.random() * (max - min + 1)) + min;
+                    num2 = Math.floor(Math.random() * (max - min + 1)) + min;
+                    exerciseKey = `${num1}×${num2}`;
+                }
+            }
+            
+            // נסמן שהתרגיל נשאל
+            quizState.askedExercises.add(exerciseKey);
+            
+            quizState.currentExercise = {
+                num1: num1,
+                num2: num2,
+                answer: num1 * num2
+            };
+            
+            document.getElementById('exercise').textContent = `${num1} × ${num2} = ?`;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('checkBtn').classList.remove('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            quizState.isAnswered = false;
+        }
+
+        // חזרה למסך בחירה
+        function showSelectionScreen() {
+            // עצירת טיימר אם קיים
+            if (quizState.timerInterval) {
+                clearInterval(quizState.timerInterval);
+            }
+            
+            // איפוס מצב החידון
+            quizState.currentQuestion = 0;
+            quizState.correctAnswers = 0;
+            quizState.wrongExercises.clear();
+            quizState.exercises = [];
+            quizState.askedExercises.clear();
+            quizState.exercisePool = [];
+            quizState.isAnswered = false;
+            
+            // הסתרת כל המסכים והצגת מסך בחירה
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('selectionScreen').classList.remove('hidden');
+        }
+
+        // התחלת חידון חדש
+        function startNewQuiz() {
+            quizState.currentQuestion = 0;
+            quizState.correctAnswers = 0;
+            quizState.wrongExercises.clear();
+            quizState.exercises = [];
+            quizState.askedExercises.clear(); // איפוס תרגילים שנשאלו
+            quizState.exercisePool = []; // איפוס מאגר התרגילים
+            quizState.startTime = Date.now();
+            quizState.isAnswered = false;
+            
+            // הסתרת מסך תוצאות ומסך בחירה והצגת מסך חידון
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('selectionScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            // התחלת טיימר
+            startTimer();
+            
+            // יצירת התרגיל הראשון
+            generateExercise();
+            updateProgress();
+        }
+
+        // עדכון התקדמות
+        function updateProgress() {
+            const progress = ((quizState.currentQuestion) / quizState.totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionCounter').textContent = 
+                `שאלה ${quizState.currentQuestion + 1} מתוך ${quizState.totalQuestions}`;
+        }
+
+        // התחלת טיימר
+        function startTimer() {
+            if (quizState.timerInterval) {
+                clearInterval(quizState.timerInterval);
+            }
+            
+            quizState.timerInterval = setInterval(() => {
+                if (quizState.startTime) {
+                    const elapsed = Math.floor((Date.now() - quizState.startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('timer').textContent = 
+                        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        // בדיקת תשובה
+        function checkAnswer() {
+            if (quizState.isAnswered) return;
+            
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const feedback = document.getElementById('feedback');
+            const checkBtn = document.getElementById('checkBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            if (isNaN(userAnswer)) {
+                alert('אנא הכנס מספר!');
+                return;
+            }
+
+            quizState.isAnswered = true;
+            checkBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+            feedback.classList.remove('hidden');
+
+            const isCorrect = userAnswer === quizState.currentExercise.answer;
+            
+            // שמירת התרגיל
+            quizState.exercises.push({
+                ...quizState.currentExercise,
+                userAnswer: userAnswer,
+                isCorrect: isCorrect
+            });
+
+            if (isCorrect) {
+                quizState.correctAnswers++;
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = '<span class="emoji">🎉</span> כל הכבוד! תשובה נכונה! <span class="emoji">🎉</span>';
+                createFireworks();
+            } else {
+                // שמירת הכפולה השגויה
+                const exerciseKey = `${quizState.currentExercise.num1}×${quizState.currentExercise.num2}`;
+                quizState.wrongExercises.add(exerciseKey);
+                weakMultiplications.add(exerciseKey);
+                
+                feedback.className = 'feedback wrong';
+                const explanation = generateExplanation(
+                    quizState.currentExercise.num1, 
+                    quizState.currentExercise.num2, 
+                    quizState.currentExercise.answer
+                );
+                feedback.innerHTML = `
+                    <div>
+                        <span class="emoji">🤔</span> לא נכון, אבל לא נורא! <span class="emoji">💪</span>
+                        <div class="explanation">${explanation}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // מעבר לשאלה הבאה
+        function nextQuestion() {
+            quizState.currentQuestion++;
+            
+            if (quizState.currentQuestion >= quizState.totalQuestions) {
+                // סיום החידון
+                endQuiz();
+            } else {
+                // שאלה הבאה
+                generateExercise();
+                updateProgress();
+            }
+        }
+
+        // סיום החידון והצגת תוצאות
+        function endQuiz() {
+            // עצירת טיימר
+            if (quizState.timerInterval) {
+                clearInterval(quizState.timerInterval);
+            }
+            
+            // הסתרת מסך חידון והצגת מסך תוצאות
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            // חישוב זמן
+            const elapsed = Math.floor((Date.now() - quizState.startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            // הצגת תוצאות
+            document.getElementById('correctCount').textContent = 
+                `${quizState.correctAnswers} / ${quizState.totalQuestions}`;
+            document.getElementById('timeTaken').textContent = timeString;
+            
+            const successRate = Math.round((quizState.correctAnswers / quizState.totalQuestions) * 100);
+            document.getElementById('successRate').textContent = `${successRate}%`;
+            
+            // הצגת כפולות שגויות
+            if (quizState.wrongExercises.size > 0) {
+                const wrongBox = document.getElementById('wrongExercisesBox');
+                const wrongList = document.getElementById('wrongExercisesList');
+                wrongBox.classList.remove('hidden');
+                
+                let html = '';
+                quizState.wrongExercises.forEach(ex => {
+                    const [num1, num2] = ex.split('×');
+                    html += `<div class="wrong-exercise-item">${num1} × ${num2}</div>`;
+                });
+                wrongList.innerHTML = html;
+            } else {
+                document.getElementById('wrongExercisesBox').classList.add('hidden');
+            }
+        }
+
+        // יצירת הסבר (חיבור חוזר)
+        function generateExplanation(num1, num2, correctAnswer) {
+            const additions = [];
+            for (let i = 0; i < num2; i++) {
+                additions.push(num1);
+            }
+            const additionString = additions.join(' + ');
+            return `${num1} × ${num2} = ${additionString} = ${correctAnswer}`;
+        }
+
+        // יצירת זיקוקים
+        function createFireworks() {
+            const fireworksContainer = document.getElementById('fireworks');
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff8b94', '#95e1d3'];
+            
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    firework.style.boxShadow = `0 0 20px ${firework.style.backgroundColor}`;
+                    
+                    fireworksContainer.appendChild(firework);
+                    
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 1000);
+                }, i * 30);
+            }
+        }
+
+        // בחירת טווח כפולות והתחלת חידון
+        function selectRange(rangeString) {
+            let min, max;
+            
+            switch(rangeString) {
+                case '1-5':
+                    min = 1;
+                    max = 5;
+                    break;
+                case '5-9':
+                    min = 5;
+                    max = 9;
+                    break;
+                case '1-100':
+                    min = 1;
+                    max = 100;
+                    break;
+                default:
+                    min = 1;
+                    max = 5;
+            }
+            
+            quizState.range = { min, max };
+            startNewQuiz();
+        }
+
+        // אירועים
+        document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('newQuizBtn').addEventListener('click', startNewQuiz);
+        document.getElementById('backToSelectionBtn').addEventListener('click', showSelectionScreen);
+        
+        // אירועים לכפתורי בחירת טווח
+        document.querySelectorAll('.range-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const range = this.getAttribute('data-range');
+                selectRange(range);
+            });
+        });
+        
+        document.getElementById('answer').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!quizState.isAnswered) {
+                    checkAnswer();
+                } else {
+                    nextQuestion();
+                }
+            }
+        });
+
+        // התחלה עם מסך בחירה
+        showSelectionScreen();
+    </script>
+</body>
+</html>
